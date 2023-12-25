@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image and Text to Canvas - Demo01</title>
+
+  <style>
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    #image-and-text-wrapper {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    #preview-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.87);
+    }
+
+    #preview-modal.is-active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="image-and-text-wrapper">
+    <img crossorigin="anonymous" src="./images/demo01.png" alt="">
+  </div>
+
+  <button type="button" id="button-generate">Generate</button>
+
+  <div id="preview-modal">
+    <img id="output-image" alt="">
+    <button type="button" id="button-close-preview-modal">close</button>
+  </div>
+
+  <script src="./js/image-and-text-to-canvas.js" type="module"></script>
+  <script type="module">
+    import { ImageTextToCanvas } from "./js/image-and-text-to-canvas.js"
+    const buttonGenerate = document.getElementById('button-generate')
+    const previewModal = document.getElementById('preview-modal')
+    const buttonClosePreviewModal = document.getElementById('button-close-preview-modal')
+
+    const init = () => {
+      const generator = new ImageTextToCanvas({
+        wrapperElement: document.getElementById('#image-and-text-wrapper'),
+        outputImageElement: document.getElementById('#output-image'),
+        generateOptions: {
+          textWidth: '85%',
+          textHeight: '40%',
+          outputWidthPx: 1000,
+          hideOverflowText: true,
+        }
+      })
+
+      buttonClosePreviewModal.addEventListener('click', () => {
+        previewModal.classList.remove('is-active')
+      })
+    }
+
+    window.onload = init
+  </script>
+</body>
+
+</html>

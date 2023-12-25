@@ -1,0 +1,25 @@
+{
+  "name": "image-and-text-to-canvas",
+  "version": "1.0.0",
+  "description": "A javascript library for web browsers, which synthesize image data and text data (both fixed and user-input) into canvas using html2canvas",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "run-s dev:build:** && run-p dev:watch:**",
+    "dev:build:copyJs": "cpx \"./build/image-and-text-to-canvas.js\" ./demo/js",
+    "dev:watch:browse": "browser-sync start --server \"demo\" --startPath demo01.html --watch --cors",
+    "prod": "run-s prod:build:**",
+    "prod:build:copyJs": "cpx \"./build/image-and-text-to-canvas.js\" ./demo/js"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.7",
+    "cpx": "^1.5.0",
+    "npm-run-all": "^4.1.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "html2canvas": "^1.4.1"
+  }
+}
