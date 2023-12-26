@@ -27,6 +27,7 @@ export class ImageTextToCanvas {
     hideOverflowText,
     horizontalTextAlignment,
     verticalTextAlignment,
+    placeholderText,
   }) {
     this.sourceImageElement = this.wrapperElement.querySelector("img");
     this.sourceImageAspectRatio =
@@ -48,7 +49,7 @@ export class ImageTextToCanvas {
     this.textElement.id = "itc-text";
     this.textElement.contentEditable = true;
 
-    //set text elements style
+    //set text element
     this.textContainerElement.style.position = "absolute";
     this.textContainerElement.style.top = "0";
     this.textContainerElement.style.right = "0";
@@ -66,6 +67,31 @@ export class ImageTextToCanvas {
     this.textElement.style.height = "100%";
     this.textElement.style.color = textColor;
 
+    //set placeholder
+    this.placeholderTextElement = document.createElement("p");
+    this.placeholderTextElement.id = "itc-placeholder";
+    this.placeholderTextElement.style.color = textColor;
+    this.placeholderTextElement.innerHTML = placeholderText;
+    this.placeholderTextElement.style.textAlign = "center";
+    this.placeholderTextElement.style.position = "absolute";
+    this.placeholderTextElement.style.top = "0";
+    this.placeholderTextElement.style.right = "0";
+    this.placeholderTextElement.style.bottom = "0";
+    this.placeholderTextElement.style.left = "0";
+    this.placeholderTextElement.style.margin = "auto";
+    this.placeholderTextElement.setAttribute("data-html2canvas-ignore", "");
+    this.placeholderTextElement.style.pointerEvents = "none";
+
+    //set placeholder display logic
+    this.textElement.addEventListener("focus", () => {
+      this.placeholderTextElement.style.display = "none";
+    });
+    this.textElement.addEventListener("blur", () => {
+      if (this.textElement.innerHTML.length === 0) {
+        this.placeholderTextElement.style.display = "block";
+      }
+    });
+
     if (horizontalTextAlignment === "center") {
       this.textElement.style.textAlign = "center";
     }
@@ -76,10 +102,11 @@ export class ImageTextToCanvas {
     // }
 
     this.textContainerElement.appendChild(this.textElement);
+    this.textContainerElement.appendChild(this.placeholderTextElement);
     this.wrapperElement.appendChild(this.textContainerElement);
   }
 
-  async generate({ outputImageWidthPx, quality }) {
+  async generate({ outputImageWidthPx = 1000, quality = 0.9 }) {
     return new Promise(async (resolve, reject) => {
       if (typeof outputImageWidthPx !== "number") {
         console.alert('"outputImageWidthPx must be number"');
@@ -89,16 +116,23 @@ export class ImageTextToCanvas {
       const outputCanvas = await html2canvas(this.wrapperElement, {
         backgroundColor: null,
         scale: 3,
-        // allowTaint: true,
       });
 
-      resolve(outputCanvas.toDataURL("image/jpeg", quality || 0.9));
+      const resizedCanvas = document.createElement("canvas");
+      const resizedContext = resizedCanvas.getContext("2d");
 
-      // const canvasWidth = outputImageWidthPx;
-      // const canvasHeight = canvasWidth * this.sourceImageAspectRatio;
+      resizedCanvas.width = outputImageWidthPx;
+      resizedCanvas.height = outputImageWidthPx * this.sourceImageAspectRatio;
 
-      // canvas.width = canvasWidth;
-      // canvas.height = canvasHeight;
+      resizedContext.drawImage(
+        outputCanvas,
+        0,
+        0,
+        resizedCanvas.width,
+        resizedCanvas.height
+      );
+
+      resolve(resizedCanvas.toDataURL("image/jpeg", quality));
     });
   }
 }
